@@ -1,0 +1,7 @@
+# Entradas e Saída desejada
+# Cada linha é uma entrada e o último valor a saída desejada
+# Cada valor separados pela virgula indica um Xi
+# O ÚLTIMO VALOR É A SAÍDA
+3,2,3,2,9,7,1,1
+1,7,9,2,3,2,3,0
+2,3,3,2,9,7,1,0
