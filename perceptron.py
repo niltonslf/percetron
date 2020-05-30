@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 def somatorio(xn, wn):
     """
@@ -44,13 +45,13 @@ def corrigir(x, w, n, t, o):
     print('dw =', dw)
     return wi
 
-def main():
+def main(filename="entradas", n=0.5, th=0.8, mit=500):
     """
     Método principal que recebe a entrada e os pesos iniciais,
     executa até chegar no resultado desejado ou no valor máximo
     de iterações.
 
-    x           => Entrada
+    x           => Entradas
     w           => pesos
     saida       => Saídas desejadas
     saidaFinal  => Saídas atual
@@ -58,23 +59,27 @@ def main():
     it          => Quantidade de iterações
     n           => Taxa de aprendizado
     th          => Threshold (Limiar)
+
+    :param filename: Nome do arquivo contendo os valores das entradas e saída
+    :param n: Taxa de aprendizado
+    :param th: Threshold (Limiar)
+    :param mit: Máximo de iterações
     """
 
+    # Tratamento de abertura do arquivo
+    try:
+        valores = np.loadtxt(filename, delimiter=',').T
+    except:
+        print(filename, "- Arquivo ou diretório não encontrado")
+        exit(1)
+    
     # Declaração de Variáveis
-    x = np.array([[3,1,2],
-                  [2,7,3],
-                  [3,9,3],
-                  [2,2,2],
-                  [9,3,9],
-                  [7,2,7],
-                  [1,3,1]])
+    x = valores[:-1]
     w = np.zeros(len(x))
-    saida = np.array([1,0,0])
+    saida = valores[-1]
     saidaFinal = np.array([0,0,0])
     mit = 500
     it = 0
-    n = 0.1
-    th = 0.5
 
     while True:
         it += 1
@@ -98,5 +103,79 @@ def main():
             print("Resultado não encontrado!!!")
             break
 
+
 if __name__ == "__main__":
-    main()
+    help = """
+    Uso: python3 perceptron.py ARQUIVO [OPÇÕES]
+
+    Realiza a execução de uma rede neural perceptron a partir das
+    entradas e saída escrito em um arquivo.
+
+    O argumento do ARQUIVO é obrigatorio.
+
+    Se OPÇÕES não for especificado é atribuido os valores padrão,
+    que são:
+        n   - Taxa de aprendizado = 0.5
+        th  - Threshold (Limiar) = 0.8
+        mit - Máximo de iterações = 500
+
+    Argumentos OPÇÕES:
+        -n FLOAT      seta a taxa de aprendizado
+        -t FLOAT      seta o limiar (Threshold)
+        -m INT        seta o máximo de iterações
+
+    Exemplos:
+        python3 perceptron.py entradas
+        python3 perceptron.py entradas -n 0.5
+        python3 perceptron.py entradas -t 0.8
+        python3 perceptron.py entradas -m 500
+        python3 perceptron.py entradas -n 0.5 -t 0.8 -m 500
+    """
+
+    n=0.5
+    th=0.8
+    mit=500
+
+    try:
+        if sys.argv[1] == '-h' or sys.argv[1] == '--help':       
+            print(help)
+            exit(0)
+        else:
+            filename = sys.argv[1]
+
+        for i in range(2,len(sys.argv),2):
+            if '-n' == sys.argv[i]:
+                try:
+                    n = float(sys.argv[i+1])
+                except:
+                    print(help)
+                    print('ERROR! Valor incorreto ou vazio para o\
+                    \nargumento -n (taxa de aprendizado)')
+                    exit(1)
+            elif '-t' == sys.argv[i]:
+                try:
+                    th = float(sys.argv[i+1])
+                except:
+                    print(help)
+                    print("ERROR!\nValor incorreto ou vazio para o\
+                    \nargumento -t (limiar [Threshold])")
+                    exit(1)
+            elif '-m' == sys.argv[i]:
+                try:
+                    mit = int(sys.argv[i+1])
+                except:
+                    print(help)
+                    print("ERROR!\nValor incorreto ou vazio para o\
+                    \nargumento -m (Máximo de iterações)")
+                    exit(1)
+            else:
+                print(help)
+                print("Argumento Inválido!!!")
+                exit(1)
+    except IndexError:
+        print("Não são suficientes os argumentos fornecidos!\
+                \n\nUso: python3 perceptron.py ARQUIVO [OPÇÃO]")
+        exit(1)
+
+    print(n, th, mit)
+    main(filename=filename, n=n, th=th, mit=mit)
