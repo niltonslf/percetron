@@ -1,79 +1,102 @@
+import numpy as np
+
 def somatorio(xn, wn):
+    """
+    Método responsável em realizar o somatorio da multiplicação
+    da entrada com os pesos para então retornar.
+
+    :param xn: Vetor de entradas
+    :param wn: Vetor de pesos
+
+    :return: O somatorio da multiplicação das entradas pelo pesos
+    """
     if len(xn) != len(wn):
         print("A quantidade de entrada não bate")
         exit(0)
-    soma = 0
-    for i in range(len(xn)):
-        soma += xn[i]*wn[i]
-    return soma
-
+    return (xn * wn).sum()
 
 def comparador(th, soma):
-    if(soma >= th):  # th ?
-        return 1
-    else:
-        return 0
+    """
+    Método responsável em validar se o a soma está acima do limiar.
 
+    :param th: Limiar de ativação do neurônio (Threshold)
+    :param soma: Resultado do somatorio
+
+    :return: 1 se a soma é maior/igual que o limiar, senão 0
+    """
+    return 1 if soma >= th else 0
 
 def corrigir(x, w, n, t, o):
-    # t => saida desejda
-    # o => saida atual
-    # n => taxa de aprendizado
+    """
+    Método responsável pelo cálculo de correção dos pesos,
+    fazendo com que os pesos convirja para o resultado ideal.
+
+    :param x: Vetor de entradas
+    :param w: Vetor de pesos
+    :param n: Taxa de aprendizado
+    :param t: Saída desejada
+    :param o: Saída atual
+
+    :return: Vetor dos novos pesos
+    """
     dw = n*(t-o)*x
-    wi = w+dw  # ?
+    wi = w+dw 
     print('dw =', dw)
-    #print('w1 =',wi)
     return wi
 
+def main():
+    """
+    Método principal que recebe a entrada e os pesos iniciais,
+    executa até chegar no resultado desejado ou no valor máximo
+    de iterações.
 
-x = []
-x.append([3, 1, 2])
-x.append([2, 7, 3])
-x.append([3, 9, 3])
-x.append([2, 2, 2])
-x.append([9, 3, 9])
-x.append([7, 2, 7])
-x.append([1, 3, 1])
-print('x =', x)
+    x           => Entrada
+    w           => pesos
+    saida       => Saídas desejadas
+    saidaFinal  => Saídas atual
+    mit         => Máximo de iterações
+    it          => Quantidade de iterações
+    n           => Taxa de aprendizado
+    th          => Threshold (Limiar)
+    """
 
-w = []
-w.append(1)
-w.append(1)
-w.append(1)
-w.append(1)
-w.append(1)
-w.append(1)
-w.append(1)
-print('w =', w)
+    # Declaração de Variáveis
+    x = np.array([[3,1,2],
+                  [2,7,3],
+                  [3,9,3],
+                  [2,2,2],
+                  [9,3,9],
+                  [7,2,7],
+                  [1,3,1]])
+    w = np.zeros(len(x))
+    saida = np.array([1,0,0])
+    saidaFinal = np.array([0,0,0])
+    mit = 500
+    it = 0
+    n = 0.1
+    th = 0.5
 
-saida = [1, 0, 0, 0, 0, 0]
-
-saidaFinal = [0, 0, 0, 0, 0, 0]
-
-n = 0.9
-th = 0.8
-
-while(True):
-    flag = 1
-    print(w)
-    for i in range(len(x[0])):
-        aux = []
-        for j in range(len(x)):
-            aux.append(x[j][i])
-
-        som = round(somatorio(aux, w), 2)
-        print('Somatorio =', som)
-        o = comparador(th, som)
-        saidaFinal[i] = o
-        if o != saida[i]:
-            print("\nAjustando...")
-            for j in range(len(w)):
-                w[j] = round(corrigir(x[j][i], w[j], n, saida[i], o), 2)
-                print('w'+str(j)+'=', w[j])
-            flag = 0
+    while True:
+        it += 1
+        print(w)
+        for i in range(x.shape[1]):
+            som = round(somatorio(x[:,i],w),2)
+            print('Somatorio =',som)
+            o = comparador(th, som) 
+            saidaFinal[i] = o
+            if o != saida[i]:
+                print("\nAjustando...")
+                w = corrigir(x[:,i], w, n, saida[i], o).round(2)
+                break
+        if (saidaFinal == saida).all():
+            print("\nResultado encontrado com sucesso!!!")
+            print("\nw =",w)
+            print(saidaFinal)
             break
-    if flag == 1:
-        break
+        elif it == mit:
+            print("\nAtingido o número máximo de iterações!!!")
+            print("Resultado não encontrado!!!")
+            break
 
-print("\nw =", w)
-print(saidaFinal)
+if __name__ == "__main__":
+    main()
