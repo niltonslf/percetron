@@ -77,26 +77,26 @@ def main(filename="entradas", n=0.5, th=0.8, mit=500):
     x = valores[:-1]
     w = np.zeros(len(x))
     saida = valores[-1]
-    saidaFinal = np.array([0,0,0])
-    mit = 500
+    saidaFinal = np.zeros(len(saida))
     it = 0
 
     while True:
         it += 1
         print(w)
         for i in range(x.shape[1]):
-            som = round(somatorio(x[:,i],w),2)
+            som = round(somatorio(x[:,i],w),4)
             print('Somatorio =',som)
             o = comparador(th, som) 
             saidaFinal[i] = o
             if o != saida[i]:
                 print("\nAjustando...")
-                w = corrigir(x[:,i], w, n, saida[i], o).round(2)
+                w = corrigir(x[:,i], w, n, saida[i], o).round(4)
                 break
         if (saidaFinal == saida).all():
             print("\nResultado encontrado com sucesso!!!")
             print("\nw =",w)
-            print(saidaFinal)
+            print("Saida =", saidaFinal)
+            print("Iterações =", it)
             break
         elif it == mit:
             print("\nAtingido o número máximo de iterações!!!")
